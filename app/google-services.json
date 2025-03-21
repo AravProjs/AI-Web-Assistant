@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "546786185213",
+    "project_id": "ai-web-summarizer-f5ca8",
+    "storage_bucket": "ai-web-summarizer-f5ca8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546786185213:android:c923a21b10d2473c641394",
+        "android_client_info": {
+          "package_name": "com.example.aiwebsummarizer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJgkwzQ66tpKzE7KOosx9lXxQLngiq5KY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
