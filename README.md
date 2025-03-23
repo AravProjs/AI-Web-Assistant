@@ -139,7 +139,7 @@ SERP_API_KEY=your_serp_api_key
 2. Enter a question in the text field
 3. Tap the "Search & Answer" button
 4. View the generated answer and source information
-5. Expand source items to see evidence used
+5. See evidence used
 6. Toggle "Previous Questions" to view your search history
 
 ## Performance Considerations
@@ -156,7 +156,7 @@ The application implements several optimizations:
 
 Your Name - [aravverma15@gmail.com](mailto:aravverma15@gmail.com)
 
-Project Link: [https://github.com/yourusername/ai-web-assistant](https://github.com/yourusername/ai-web-assistant)
+Project Link: [https://github.com/AravProjs/ai-web-assistant](https://github.com/AravProjs/ai-web-assistant)
 
 ---
 
