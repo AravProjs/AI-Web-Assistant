@@ -1,10 +1,6 @@
 # AI Web Assistant
 
 <p align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" alt="App Logo" width="120"/>
-</p>
-
-<p align="center">
   Web content summarization and intelligent search in your pocket
 </p>
 
