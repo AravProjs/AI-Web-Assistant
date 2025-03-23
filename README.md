@@ -24,8 +24,7 @@ Additional features include:
 
 * **User Authentication**: Secure login and registration system using Firebase Authentication.
 * **History Tracking**: View past summaries and searches, stored securely in Firebase Firestore.
-* **Offline Support**: View previously generated summaries and answers even without an internet connection.
-* **Clean UI**: Modern, intuitive interface built with Jetpack Compose and Material Design 3.
+* **Clean UI**: Modern, intuitive interface built with Jetpack Compose.
 
 ## Technologies
 
