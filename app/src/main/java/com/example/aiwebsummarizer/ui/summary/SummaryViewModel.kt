@@ -33,7 +33,7 @@ class SummaryViewModel(
     val historyState: StateFlow<HistoryState> = _historyState
 
     // this would be securely stored
-    private val apiKey = "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"
+    private val apiKey = "HUGGING_FACE_API_KEY"
 
     fun summarizeUrl(url: String) {
         viewModelScope.launch {
