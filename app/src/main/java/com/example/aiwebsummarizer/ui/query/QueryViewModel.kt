@@ -1,13 +1,15 @@
-package com.example.aiwebsummarizer.ui.summary
+package com.example.aiwebsummarizer.ui.query
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.aiwebsummarizer.data.api.HuggingFaceApi
-import com.example.aiwebsummarizer.data.api.WebScraperService
-import com.example.aiwebsummarizer.data.model.Summary
-import com.example.aiwebsummarizer.data.repository.SummaryRepository
+import com.example.aiwebsummarizer.data.api.LLMApiService
+import com.example.aiwebsummarizer.data.api.SearchApiService
+import com.example.aiwebsummarizer.data.api.SerpApiService
+import com.example.aiwebsummarizer.data.model.Query
+import com.example.aiwebsummarizer.data.model.QueryResult
+import com.example.aiwebsummarizer.data.repository.QueryRepository
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
@@ -17,61 +19,66 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class SummaryViewModel(
-    private val summaryRepository: SummaryRepository,
+class QueryViewModel(
+    private val queryRepository: QueryRepository,
     private val analytics: FirebaseAnalytics
 ) : ViewModel() {
 
-    private val _summaryState = MutableStateFlow<SummaryState>(SummaryState.Initial)
-    val summaryState: StateFlow<SummaryState> = _summaryState
+    private val _queryState = MutableStateFlow<QueryState>(QueryState.Initial)
+    val queryState: StateFlow<QueryState> = _queryState
 
     private val _historyState = MutableStateFlow<HistoryState>(HistoryState.Initial)
     val historyState: StateFlow<HistoryState> = _historyState
 
-    // this would be securely stored
+    // In production, this should be securely stored
     private val apiKey = "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"
 
-    fun summarizeUrl(url: String) {
+    /**
+     * Process a user query.
+     *
+     * @param questionText The text of the user's question
+     */
+    fun processQuery(questionText: String) {
         viewModelScope.launch {
             try {
-                _summaryState.value = SummaryState.Loading
+                _queryState.value = QueryState.Loading
 
                 // Log analytics event
-                analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT) {
-                    param(FirebaseAnalytics.Param.CONTENT_TYPE, "url_summarization")
-                    param(FirebaseAnalytics.Param.ITEM_ID, url)
+                analytics.logEvent(FirebaseAnalytics.Event.SEARCH) {
+                    param(FirebaseAnalytics.Param.SEARCH_TERM, questionText)
                 }
 
-                // Use the actual repository to summarize URL
-                val summary = summaryRepository.summarizeUrl(url, apiKey)
-                _summaryState.value = SummaryState.Success(summary)
+                // Process the query using the repository
+                val queryResult = queryRepository.processQuery(questionText, apiKey)
+                _queryState.value = QueryState.Success(queryResult)
 
                 // Load updated history
-                loadSummaryHistory()
+                loadQueryHistory()
 
             } catch (e: Exception) {
-                _summaryState.value = SummaryState.Error(e.message ?: "Failed to summarize URL")
+                _queryState.value = QueryState.Error(e.message ?: "Failed to process query")
 
                 // Log error to analytics
-                analytics.logEvent("summarization_error") {
+                analytics.logEvent("query_error") {
                     param("error_message", e.message ?: "Unknown error")
-                    param("url", url)
+                    param("query", questionText)
                 }
             }
         }
     }
 
-    fun loadSummaryHistory() {
+    /**
+     * Load the user's query history.
+     */
+    fun loadQueryHistory() {
         viewModelScope.launch {
             try {
                 _historyState.value = HistoryState.Loading
 
-                // Use the actual repository to get history
-                val history = summaryRepository.getSummaryHistory()
+                // Get query history from repository
+                val history = queryRepository.getQueryHistory()
                 _historyState.value = HistoryState.Success(history)
 
             } catch (e: Exception) {
@@ -80,11 +87,13 @@ class SummaryViewModel(
         }
     }
 
-    // Factory to create this ViewModel
+    /**
+     * Factory to create this ViewModel.
+     */
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(SummaryViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(QueryViewModel::class.java)) {
                 // Create the network components
                 val logging = HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
@@ -97,45 +106,42 @@ class SummaryViewModel(
                     .writeTimeout(60, TimeUnit.SECONDS)
                     .build()
 
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://api-inference.huggingface.co/")
-                    .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-
-                val huggingFaceApi = retrofit.create(HuggingFaceApi::class.java)
-                val webScraperService = WebScraperService()
+                // Create services
+                val searchApiService = SearchApiService(okHttpClient)
+                val serpApiService = SerpApiService(okHttpClient)  // Create SerpApiService instance
+                val llmApiService = LLMApiService(okHttpClient)
 
                 // Get Firebase instances
                 val firestore = FirebaseFirestore.getInstance()
                 val auth = FirebaseAuth.getInstance()
                 val analytics = FirebaseAnalytics.getInstance(context)
 
-                // Create repository
-                val summaryRepository = SummaryRepository(
-                    huggingFaceApi,
-                    webScraperService,
+                // Create repository with SerpApiService
+                val queryRepository = QueryRepository(
+                    searchApiService,
+                    serpApiService,  // Pass SerpApiService instance
+                    llmApiService,
                     firestore,
                     auth
                 )
 
-                return SummaryViewModel(summaryRepository, analytics) as T
+                return QueryViewModel(queryRepository, analytics) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }
 
-sealed class SummaryState {
-    object Initial : SummaryState()
-    object Loading : SummaryState()
-    data class Success(val summary: Summary) : SummaryState()
-    data class Error(val message: String) : SummaryState()
+sealed class QueryState {
+    object Initial : QueryState()
+    object Loading : QueryState()
+    data class Success(val result: QueryResult) : QueryState()
+    data class Error(val message: String) : QueryState()
 }
 
 sealed class HistoryState {
     object Initial : HistoryState()
     object Loading : HistoryState()
-    data class Success(val summaries: List<Summary>) : HistoryState()
+    data class Success(val queries: List<Query>) : HistoryState()
     data class Error(val message: String) : HistoryState()
 }

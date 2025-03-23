@@ -1,6 +1,9 @@
 package com.example.aiwebsummarizer.di
 
 import com.example.aiwebsummarizer.data.api.HuggingFaceApi
+import com.example.aiwebsummarizer.data.api.LLMApiService
+import com.example.aiwebsummarizer.data.api.SearchApiService
+import com.example.aiwebsummarizer.data.api.SerpApiService
 import com.example.aiwebsummarizer.data.api.WebScraperService
 import dagger.Module
 import dagger.Provides
@@ -52,5 +55,23 @@ object NetworkModule {
     @Singleton
     fun provideWebScraperService(): WebScraperService {
         return WebScraperService()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchApiService(okHttpClient: OkHttpClient): SearchApiService {
+        return SearchApiService(okHttpClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLLMApiService(okHttpClient: OkHttpClient): LLMApiService {
+        return LLMApiService(okHttpClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSerpApiService(okHttpClient: OkHttpClient): SerpApiService {
+        return SerpApiService(okHttpClient)
     }
 }

@@ -16,9 +16,11 @@ import com.example.aiwebsummarizer.data.model.Summary
 import java.text.SimpleDateFormat
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SummaryScreen(
-    navController: NavController
+    navController: NavController,
+    onNavigateToQuery: () -> Unit = {}
 ) {
     // Get the context to pass to the Factory
     val context = LocalContext.current
@@ -38,143 +40,171 @@ fun SummaryScreen(
         viewModel.loadSummaryHistory()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "AI Web Summarizer",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = url,
-            onValueChange = { url = it },
-            label = { Text("Enter URL to summarize") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        )
-
-        Button(
-            onClick = {
-                if (url.isNotEmpty()) {
-                    viewModel.summarizeUrl(url)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            enabled = url.isNotEmpty() && summaryState !is SummaryState.Loading
-        ) {
-            if (summaryState is SummaryState.Loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("AI Web Summarizer") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-            } else {
-                Text("Summarize")
-            }
+            )
         }
-
-        when (summaryState) {
-            is SummaryState.Success -> {
-                val summary = (summaryState as SummaryState.Success).summary
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Summary",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        Text(
-                            text = summary.summarizedText,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Source: ${summary.url}",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-            is SummaryState.Error -> {
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            // New section for switching between summarizer and search features
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = (summaryState as SummaryState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    text = "Try our new search feature!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(end = 16.dp)
                 )
-            }
-            else -> {
-                // Show nothing or a placeholder
-            }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Previous Summaries",
-                style = MaterialTheme.typography.titleMedium
+                Button(onClick = onNavigateToQuery) {
+                    Text("Go to Search")
+                }
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+            OutlinedTextField(
+                value = url,
+                onValueChange = { url = it },
+                label = { Text("Enter URL to summarize") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             )
 
-            Switch(
-                checked = showHistory,
-                onCheckedChange = { showHistory = it }
-            )
-        }
+            Button(
+                onClick = {
+                    if (url.isNotEmpty()) {
+                        viewModel.summarizeUrl(url)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                enabled = url.isNotEmpty() && summaryState !is SummaryState.Loading
+            ) {
+                if (summaryState is SummaryState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Summarize")
+                }
+            }
 
-        if (showHistory) {
-            when (historyState) {
-                is HistoryState.Success -> {
-                    val summaries = (historyState as HistoryState.Success).summaries
+            when (summaryState) {
+                is SummaryState.Success -> {
+                    val summary = (summaryState as SummaryState.Success).summary
 
-                    if (summaries.isEmpty()) {
-                        Text(
-                            text = "No summary history found",
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    } else {
-                        LazyColumn {
-                            items(summaries) { summary ->
-                                SummaryHistoryItem(summary = summary)
-                            }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Summary",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            Text(
+                                text = summary.summarizedText,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Source: ${summary.url}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }
-                is HistoryState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-                is HistoryState.Error -> {
+                is SummaryState.Error -> {
                     Text(
-                        text = (historyState as HistoryState.Error).message,
+                        text = (summaryState as SummaryState.Error).message,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
                 else -> {
-                    // Show nothing
+                    // Show nothing or a placeholder
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Previous Summaries",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Switch(
+                    checked = showHistory,
+                    onCheckedChange = { showHistory = it }
+                )
+            }
+
+            if (showHistory) {
+                when (historyState) {
+                    is HistoryState.Success -> {
+                        val summaries = (historyState as HistoryState.Success).summaries
+
+                        if (summaries.isEmpty()) {
+                            Text(
+                                text = "No summary history found",
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        } else {
+                            LazyColumn {
+                                items(summaries) { summary ->
+                                    SummaryHistoryItem(summary = summary)
+                                }
+                            }
+                        }
+                    }
+                    is HistoryState.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                    is HistoryState.Error -> {
+                        Text(
+                            text = (historyState as HistoryState.Error).message,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                    else -> {
+                        // Show nothing
+                    }
                 }
             }
         }

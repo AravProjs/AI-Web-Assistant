@@ -7,14 +7,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.aiwebsummarizer.ui.auth.LoginScreen
 import com.example.aiwebsummarizer.ui.auth.RegisterScreen
+import com.example.aiwebsummarizer.ui.query.QueryScreen
 import com.example.aiwebsummarizer.ui.summary.SummaryScreen
-import com.example.aiwebsummarizer.ui.summary.SummaryViewModel
 
-// Define navigation routes
+
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Summary : Screen("summary")
+    object Query : Screen("query")
 }
 
 @Composable
@@ -34,7 +35,16 @@ fun AppNavigation() {
         }
 
         composable(Screen.Summary.route) {
-            SummaryScreen(navController = navController)
+            SummaryScreen(
+                navController = navController,
+                onNavigateToQuery = {
+                    navController.navigate(Screen.Query.route)
+                }
+            )
+        }
+
+        composable(Screen.Query.route) {
+            QueryScreen(navController = navController)
         }
     }
 }

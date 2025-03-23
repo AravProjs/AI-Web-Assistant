@@ -82,6 +82,10 @@ dependencies {
 
     // Jsoup for web scraping
     implementation("org.jsoup:jsoup:1.16.1")
+    implementation(libs.play.services.appsearch)
+
+    // Gson for JSON parsing
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // Testing dependencies
     testImplementation(libs.junit)
