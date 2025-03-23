@@ -98,7 +98,7 @@ The app uses a unidirectional data flow pattern:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ai-web-assistant.git
+git clone https://github.com/AravProjs/AI-Web-Assistant.git
 ```
 
 2. Open the project in Android Studio
@@ -151,13 +151,10 @@ The application implements several optimizations:
 * **Content Limiting**: Implements smart truncation to reduce memory usage
 * **Efficient Database Queries**: Retrieves only necessary data from Firestore
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-Your Name - [your.email@example.com](mailto:your.email@example.com)
+Your Name - [aravverma15@gmail.com](mailto:aravverma15@gmail.com)
 
 Project Link: [https://github.com/yourusername/ai-web-assistant](https://github.com/yourusername/ai-web-assistant)
 
