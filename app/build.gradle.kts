@@ -87,6 +87,8 @@ dependencies {
     // Gson for JSON parsing
     implementation("com.google.code.gson:gson:2.10.1")
 
+    implementation ("io.github.cdimascio:dotenv-kotlin:6.5.1")
+
     // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

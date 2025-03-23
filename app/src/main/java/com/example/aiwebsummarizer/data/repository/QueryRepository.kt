@@ -11,6 +11,8 @@ import com.example.aiwebsummarizer.data.model.Source
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import io.github.cdimascio.dotenv.Dotenv
+
 
 /**
  * Repository to handle query processing, including search, answer generation, and storage.
@@ -28,7 +30,15 @@ class QueryRepository(
         private const val USE_SERP_API = true // Set to true to use SerpAPI
 
         // Replace with your actual SerpAPI key
-        private const val SERP_API_KEY = "SERP_API_KEY"
+        private val dotenv: Dotenv = Dotenv.configure()
+            .directory("/assets")
+            .filename("env")
+            .load()
+
+        private val SERP_API_KEY: String by lazy {
+            dotenv["SERP_API_KEY"] ?: throw IllegalArgumentException("SERP_API_KEY not found in env file")
+        }
+
     }
 
     /**

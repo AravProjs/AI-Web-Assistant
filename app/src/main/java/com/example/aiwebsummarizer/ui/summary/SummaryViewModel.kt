@@ -20,6 +20,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import io.github.cdimascio.dotenv.Dotenv
+
 
 class SummaryViewModel(
     private val summaryRepository: SummaryRepository,
@@ -32,8 +34,14 @@ class SummaryViewModel(
     private val _historyState = MutableStateFlow<HistoryState>(HistoryState.Initial)
     val historyState: StateFlow<HistoryState> = _historyState
 
-    // this would be securely stored
-    private val apiKey = "HUGGING_FACE_API_KEY"
+    private val dotenv: Dotenv = Dotenv.configure()
+        .directory("/assets")
+        .filename("env")
+        .load()
+
+    private val apiKey: String by lazy {
+        dotenv["HUGGING_FACE_API_KEY"] ?: throw IllegalArgumentException("HUGGING_FACE_API_KEY not found in env file")
+    }
 
     fun summarizeUrl(url: String) {
         viewModelScope.launch {

@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
+import io.github.cdimascio.dotenv.Dotenv
+
 
 class QueryViewModel(
     private val queryRepository: QueryRepository,
@@ -33,7 +35,14 @@ class QueryViewModel(
     val historyState: StateFlow<HistoryState> = _historyState
 
     // In production, this should be securely stored
-    private val apiKey = "HUGGING_FACE_API_KEY"
+    private val dotenv: Dotenv = Dotenv.configure()
+        .directory("/assets")
+        .filename("env")
+        .load()
+
+    private val apiKey: String by lazy {
+        dotenv["HUGGING_FACE_API_KEY"] ?: throw IllegalArgumentException("HUGGING_FACE_API_KEY not found in env file")
+    }
 
     /**
      * Process a user query.
