@@ -10,7 +10,6 @@
   <a href="#architecture">Architecture</a> •
   <a href="#setup">Setup</a> •
   <a href="#usage">Usage</a> •
-  <a href="#license">License</a>
 </p>
 
 ## Features
