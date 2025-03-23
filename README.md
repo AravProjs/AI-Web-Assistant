@@ -8,7 +8,6 @@
   <a href="#features">Features</a> •
   <a href="#technologies">Technologies</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#screenshots">Screenshots</a> •
   <a href="#setup">Setup</a> •
   <a href="#usage">Usage</a> •
   <a href="#license">License</a>
@@ -69,20 +68,6 @@ The app uses a unidirectional data flow pattern:
 2. Events are processed by ViewModels
 3. ViewModels update UI state based on repository results
 4. UI recomposes based on the new state
-
-## Screenshots
-
-<p align="center">
-  <img src="screenshots/login_screen.png" alt="Login Screen" width="240"/>
-  <img src="screenshots/summary_screen.png" alt="Summary Screen" width="240"/>
-  <img src="screenshots/search_screen.png" alt="Search Screen" width="240"/>
-</p>
-
-<p align="center">
-  <img src="screenshots/summary_result.png" alt="Summary Result" width="240"/>
-  <img src="screenshots/search_result.png" alt="Search Result" width="240"/>
-  <img src="screenshots/history_view.png" alt="History View" width="240"/>
-</p>
 
 ## Setup
 
