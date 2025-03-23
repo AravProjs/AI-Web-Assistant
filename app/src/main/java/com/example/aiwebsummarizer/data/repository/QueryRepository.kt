@@ -28,7 +28,7 @@ class QueryRepository(
         private const val USE_SERP_API = true // Set to true to use SerpAPI
 
         // Replace with your actual SerpAPI key
-        private const val SERP_API_KEY = "66c08d0f5b30cc8b87609173afe574c90a78437cbf9a2abb6077426a361250a5"
+        private const val SERP_API_KEY = "SERP_API_KEY"
     }
 
     /**

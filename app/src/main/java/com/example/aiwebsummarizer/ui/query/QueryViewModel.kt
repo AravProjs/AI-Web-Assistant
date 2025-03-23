@@ -33,7 +33,7 @@ class QueryViewModel(
     val historyState: StateFlow<HistoryState> = _historyState
 
     // In production, this should be securely stored
-    private val apiKey = "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"
+    private val apiKey = "HUGGING_FACE_API_KEY"
 
     /**
      * Process a user query.
