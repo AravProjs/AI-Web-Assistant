@@ -9,7 +9,7 @@
   <a href="#technologies">Technologies</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#setup">Setup</a> •
-  <a href="#usage">Usage</a> •
+  <a href="#usage">Usage</a> 
 </p>
 
 ## Features
