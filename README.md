@@ -137,7 +137,7 @@ The application implements several optimizations:
 
 ## Contact
 
-Your Name - [aravverma15@gmail.com](mailto:aravverma15@gmail.com)
+Email - [aravverma15@gmail.com](mailto:aravverma15@gmail.com)
 
 Project Link: [https://github.com/AravProjs/ai-web-assistant](https://github.com/AravProjs/ai-web-assistant)
 
